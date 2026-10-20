@@ -1,0 +1,388 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% set summary = interview.get("summary", {}) %}
+{% set responses = interview.get("responses", []) %}
+{% set score = interview.get("performance_score", 0)|float %}
+{% set confidence = interview.get("voice_result", {}).get("confidence", interview.get("confidence_score", 0))|float %}
+{% set confidence_percent = (confidence * 100)|round|int %}
+{% set timestamp = interview.get("timestamp", "") %}
+
+{% if score >= 9 %}
+    {% set grade = "A+" %}
+{% elif score >= 8 %}
+    {% set grade = "A" %}
+{% elif score >= 7 %}
+    {% set grade = "B" %}
+{% elif score >= 6 %}
+    {% set grade = "C" %}
+{% else %}
+    {% set grade = "D" %}
+{% endif %}
+
+<div class="container fade-in">
+
+    <!-- Header -->
+
+    <div class="candidate-header">
+
+        <div>
+
+            <span class="badge">👤 Candidate Report</span>
+
+            <h1>{{ interview.get("candidate_name","Unknown Candidate") }}</h1>
+
+            <p class="candidate-role">
+                {{ interview.get("role","-") }}
+                •
+                {{ interview.get("interview_type","-") }}
+            </p>
+
+            <p>
+                <strong>Date:</strong>
+                {{ timestamp[:10] if timestamp else "N/A" }}
+            </p>
+
+        </div>
+
+        <div>
+
+            {% if summary.get("recommendation")=="Recommended" %}
+
+                <span class="status recommended">
+                    ✅ Recommended
+                </span>
+
+            {% elif summary.get("recommendation")=="Needs Improvement" %}
+
+                <span class="status improvement">
+                    ⚠ Needs Improvement
+                </span>
+
+            {% else %}
+
+                <span class="status not-recommended">
+                    ❌ Not Recommended
+                </span>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <!-- Grade -->
+
+    <div class="report-card">
+
+        <div class="grade-section">
+
+            <div>
+
+                <h3>Overall Grade</h3>
+
+                <div class="grade-circle">
+
+                    {{ grade }}
+
+                </div>
+
+            </div>
+
+            <div class="grade-info">
+
+                <h3>Performance Score</h3>
+
+                <div class="progress">
+
+                    <div class="progress-bar"
+                        style="width: {{ score*10 }}%;">
+
+                        {{ score }}/10
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Cards -->
+
+    <div class="dashboard-grid">
+
+        <div class="dashboard-card">
+
+            <h4> Performance</h4>
+
+            <h2>{{ score }}/10</h2>
+
+        </div>
+
+        <div class="dashboard-card">
+
+            <h4> Confidence</h4>
+
+            <h2>{{ confidence_percent }}%</h2>
+
+        </div>
+
+        <div class="dashboard-card">
+
+            <h4> Experience</h4>
+
+            <h2>{{ interview.get("experience_level","-") }}</h2>
+
+        </div>
+
+        <div class="dashboard-card">
+
+            <h4> Interview</h4>
+
+            <h2>{{ interview.get("interview_type","-") }}</h2>
+
+        </div>
+
+    </div>
+
+    <!-- Summary -->
+
+    <div class="report-card">
+
+        <h2> AI Summary</h2>
+
+        <p>
+
+            {{ summary.get("summary","No summary available.") }}
+
+        </p>
+
+    </div>
+
+    <!-- Strengths + Weaknesses -->
+
+    <div class="two-column">
+
+        <div class="report-card">
+
+            <h2> Strengths</h2>
+
+            <ul>
+
+                {% for item in summary.get("strengths",[]) %}
+
+                    <li>{{ item }}</li>
+
+                {% else %}
+
+                    <li>No strengths available.</li>
+
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+        <div class="report-card">
+
+            <h2>⚠ Weaknesses</h2>
+
+            <ul>
+
+                {% for item in summary.get("weaknesses",[]) %}
+
+                    <li>{{ item }}</li>
+
+                {% else %}
+
+                    <li>No weaknesses available.</li>
+
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+    </div>
+
+    <!-- Study Plan -->
+
+    <div class="report-card">
+
+        <h2> Personalized Study Plan</h2>
+
+        <ul>
+
+            {% for item in summary.get("study_plan",[]) %}
+
+                <li>{{ item }}</li>
+
+            {% else %}
+
+                <li>No study plan available.</li>
+
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+    <!-- Question Report -->
+
+    <div class="report-card">
+
+        <h2> Question-wise Evaluation</h2>
+
+        {% if responses %}
+
+            {% for response in responses %}
+
+                {% set evaluation = response.get("evaluation",{}) %}
+
+                <div class="question-card">
+
+                    <div class="question-header">
+
+                        <h3>
+
+                            Question {{ loop.index }}
+
+                        </h3>
+
+                        <span class="score-badge">
+
+                            {{ evaluation.get("score",0) }}/10
+
+                        </span>
+
+                    </div>
+
+                    <p>
+
+                        <strong>Topic:</strong>
+
+                        {{ response.get("topic","-") }}
+
+                    </p>
+
+                    <br>
+
+                    <strong>Question</strong>
+
+                    <div class="code-box">
+
+                        {{ response.get("question","") | format_code_blocks }}
+
+                    </div>
+
+                    <br>
+
+                    <strong>Candidate Answer</strong>
+
+                    <div class="formatted-content">{{ response.get("answer","") | format_code_blocks }}</div>
+
+                    <br>
+
+                    <strong>AI Feedback</strong>
+
+                    <div class="feedback-box">
+
+                        {{ evaluation.get("feedback","No feedback") }}
+
+                    </div>
+
+                    {% set criteria = evaluation.get("criteria", {}) %}
+                    <div class="evaluation-criteria" aria-label="Answer quality scores">
+                        {% for label, key in [("Correctness", "correctness"), ("Clarity", "clarity"), ("Depth", "depth"), ("Examples", "examples")] %}
+                        <div class="criteria-item">
+                            <span>{{ label }}</span>
+                            <strong>{{ criteria.get(key, evaluation.get("score", 0)) }}/10</strong>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <br>
+
+                    <strong>Missing Concepts</strong>
+
+                    <ul>
+
+                        {% for item in evaluation.get("missing_concepts",[]) %}
+
+                            <li>{{ item }}</li>
+
+                        {% else %}
+
+                            <li>None</li>
+
+                        {% endfor %}
+
+                    </ul>
+
+                    <details>
+
+                        <summary>
+
+                             View Ideal Answer
+
+                        </summary>
+
+                        <pre>
+
+{{ evaluation.get("ideal_answer","") }}
+
+                        </pre>
+
+                    </details>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>No interview responses found.</p>
+
+        {% endif %}
+
+    </div>
+
+    <!-- Final Recommendation -->
+
+    <div class="report-card final-banner">
+
+        <h2> Final AI Recommendation</h2>
+
+        <p>
+
+            {{ summary.get("recommendation","Not Available") }}
+
+        </p>
+
+    </div>
+
+    <!-- Buttons -->
+
+    <div class="button-group">
+
+        <a href="{{ url_for('dashboard') }}" class="btn">
+
+            ← Dashboard
+
+        </a>
+
+        <button onclick="window.print()" class="btn">
+            
+            🖨 Print Report
+
+        </button>
+
+    </div>
+
+</div>
+
+{% endblock %}

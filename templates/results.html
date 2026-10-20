@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="fade-in results-page">
+
+    <div class="results-header">
+        <div>
+            <span class="results-badge">🎉 Interview Completed</span>
+            <h2>AI Interview Report</h2>
+            <p>Review your overall result first, then use the detailed feedback below to plan your next practice session.</p>
+        </div>
+    </div>
+
+    <div class="results-score-wrap">
+        <div class="score-card main-score-card">
+            <div class="score-label">Overall Performance</div>
+            <h1>{{ performance_score }}/10</h1>
+            <p>Candidate: <strong>{{ candidate_name }}</strong></p>
+        </div>
+
+        <div class="results-metrics">
+            <div class="metric-card">
+                <span class="metric-label">AI Overall Score</span>
+                <strong>{{ summary.overall_score }}/10</strong>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Recommendation</span>
+                {% if summary.recommendation == "Recommended" %}
+                <span class="recommendation recommended">✅ Recommended</span>
+                {% elif summary.recommendation == "Needs Improvement" %}
+                <span class="recommendation improvement">⚠ Needs Improvement</span>
+                {% else %}
+                <span class="recommendation not-recommended">❌ Not Recommended</span>
+                {% endif %}
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Role</span>
+                <strong>{{ role }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="ai-summary">
+        <h2>🤖 AI Summary</h2>
+        <p>{{ summary.summary }}</p>
+    </div>
+
+    <div class="results-grid">
+        <div class="strength-box">
+            <h2>💪 Strengths</h2>
+            <ul>
+                {% for item in summary.strengths %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="weakness-box">
+            <h2>📌 Areas to Improve</h2>
+            <ul>
+                {% for item in summary.weaknesses %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="study-plan">
+        <h2>📚 Recommended Study Plan</h2>
+        <ul>
+            {% for item in summary.study_plan %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% if voice_result %}
+    <div class="confidence-card">
+        <span>Confidence Score</span>
+        <strong>{{ (voice_result.get('confidence', 0) * 100)|round|int }}%</strong>
+    </div>
+    {% endif %}
+
+    <div class="question-results-wrap">
+        <div class="section-title compact-title">
+            <h2>📋 Question-wise Evaluation</h2>
+        </div>
+
+        {% for response in responses %}
+        <div class="question-card question-result">
+            <div class="question-result-top">
+                <span class="topic-badge">{{ response.topic }}</span>
+                {% if response.flagged %}<span class="review-flag">Flagged for review</span>{% endif %}
+                {% set score = response.evaluation.score if response.evaluation is defined else response.score %}
+                {% if score >= 8 %}
+                <span class="score-excellent">{{ score }}/10</span>
+                {% elif score >= 5 %}
+                <span class="score-good">{{ score }}/10</span>
+                {% else %}
+                <span class="score-average">{{ score }}/10</span>
+                {% endif %}
+            </div>
+
+            <div class="question-block">
+                <h3>Question</h3>
+                <div class="formatted-content">{{ response.question | format_code_blocks }}</div>
+            </div>
+
+            <div class="question-block">
+                <h3>Your Answer</h3>
+                <div class="formatted-content">{{ (response.answer if response.answer is defined else response.response) | format_code_blocks }}</div>
+            </div>
+
+            {% set criteria = response.evaluation.criteria if response.evaluation is defined else response.criteria %}
+            <div class="evaluation-criteria" aria-label="Answer quality scores">
+                {% for label, value in [('Correctness', criteria.correctness), ('Clarity', criteria.clarity), ('Depth', criteria.depth), ('Examples', criteria.examples)] %}
+                <div class="criteria-item">
+                    <span>{{ label }}</span>
+                    <strong>{{ value|round(1) }}/10</strong>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="feedback-box">
+                <h3>💬 AI Feedback</h3>
+                <p>{{ response.evaluation.feedback if response.evaluation is defined else response.feedback }}</p>
+            </div>
+
+            <div class="analysis-grid">
+                <div class="strength-box compact-box">
+                    <h3>✅ Strengths</h3>
+                    <ul>
+                        {% for s in (response.evaluation.strengths if response.evaluation is defined else response.strengths) %}
+                        <li>{{ s }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="weakness-box compact-box">
+                    <h3>❌ Missing Concepts</h3>
+                    <ul>
+                        {% for m in (response.evaluation.missing_concepts if response.evaluation is defined else response.missing_concepts) %}
+                        <li>{{ m }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="study-plan compact-study-plan">
+                <h3>🎯 Ideal Answer</h3>
+                <p>{{ response.evaluation.ideal_answer if response.evaluation is defined else response.ideal_answer }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('index') }}" class="btn">🔄 Take Another Interview</a>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,6 @@
+.env
+__pycache__/
+.venv/
+*.pyc
+data/users.json
+data/interview_results.json

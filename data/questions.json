@@ -1,0 +1,54 @@
+{
+  "technical_questions": [
+    {
+      "question": "What is the difference between a list and a tuple in Python?",
+      "answer": "Lists are mutable, meaning they can be changed, while tuples are immutable."
+    },
+    {
+      "question": "Explain the concept of inheritance in object-oriented programming.",
+      "answer": "Inheritance allows a class to inherit attributes and methods from another class."
+    },
+    {
+      "question": "What is a RESTful API?",
+      "answer": "A RESTful API is an architectural style for designing networked applications using HTTP requests."
+    },
+    {
+      "question": "Describe the difference between a process and a thread in an operating system.",
+      "answer": "A process is an independent program execution instance with its own memory space, while a thread is a lightweight unit of execution that shares memory with other threads in the same process."
+    },
+    {
+      "question": "What is virtual memory and why is it used?",
+      "answer": "Virtual memory allows the operating system to use disk storage to extend physical RAM, providing each process with a larger, isolated address space and enabling memory protection and multitasking."
+    },
+    {
+      "question": "Explain the purpose of the OS kernel.",
+      "answer": "The kernel manages hardware resources, process scheduling, memory management, device I/O, and system calls, acting as the core interface between applications and hardware."
+    },
+    {
+      "question": "What is the difference between TCP and UDP?",
+      "answer": "TCP is a connection-oriented protocol that provides reliable, ordered delivery with congestion control, while UDP is a connectionless protocol that provides low-overhead, best-effort delivery without guaranteed reliability."
+    },
+    {
+      "question": "What is a subnet mask and how is it used in IP networking?",
+      "answer": "A subnet mask divides an IP address into network and host portions, allowing routers to determine whether an address belongs to the same subnet or must be reached through a gateway."
+    },
+    {
+      "question": "Explain the purpose of DNS in a network.",
+      "answer": "DNS translates human-readable domain names into IP addresses so devices can locate and communicate with each other across the network."
+    }
+  ],
+  "hr_questions": [
+    {
+      "question": "Tell me about yourself.",
+      "answer": "This is your chance to give a brief overview of your background and experience."
+    },
+    {
+      "question": "What are your strengths and weaknesses?",
+      "answer": "Discuss your strengths that are relevant to the job and a weakness that you are working to improve."
+    },
+    {
+      "question": "Where do you see yourself in five years?",
+      "answer": "Discuss your career goals and how they align with the company's objectives."
+    }
+  ]
+}

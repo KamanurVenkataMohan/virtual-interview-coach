@@ -1,0 +1,12 @@
+Flask
+streamlit
+speechrecognition
+numpy
+pandas
+scikit-learn
+nltk
+pydub
+librosa
+google-genai
+python-dotenv
+pytest

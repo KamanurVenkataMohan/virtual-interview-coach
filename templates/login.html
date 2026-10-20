@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="auth-page login-page">
+
+    <div class="login-shell fade-in">
+
+        <aside class="login-visual">
+            <div class="visual-glow"></div>
+            <div class="brand-badge">AI</div>
+            <div class="visual-header">
+                <span class="eyebrow">SMART PREP</span>
+                <h2>AI Interview Simulator</h2>
+            </div>
+            <p>
+                Practice smarter, build confidence, and get ready for your next big interview.
+            </p>
+
+            <ul class="feature-list">
+                <li>AI-generated interview questions</li>
+                <li>Smart candidate evaluation</li>
+                <li>Performance insights and feedback</li>
+            </ul>
+
+            <div class="mini-stat-grid">
+                <div class="mini-stat">
+                    <strong>24/7</strong>
+                    <span>Practice</span>
+                </div>
+                <div class="mini-stat">
+                    <strong>AI</strong>
+                    <span>Scoring</span>
+                </div>
+            </div>
+        </aside>
+
+        <div class="auth-card login-card">
+
+            
+
+            <h1>Welcome back</h1>
+
+            <p class="auth-subtitle">
+                Sign in to continue your interview preparation.
+            </p>
+
+            {% if error %}
+            <div class="auth-alert error">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+
+                <div class="input-group">
+
+                    <label for="username">
+                        Username or Email
+                    </label>
+
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Enter username or email"
+                        required
+                        autocomplete="username"
+                    >
+
+                </div>
+
+                <div class="input-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    >
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="start-btn"
+                >
+                    Login
+                </button>
+
+            </form>
+
+            <div class="auth-divider">
+                <span>New here?</span>
+            </div>
+
+            <a
+                href="{{ url_for('register') }}"
+                class="auth-register-btn"
+            >
+                Create an Account
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

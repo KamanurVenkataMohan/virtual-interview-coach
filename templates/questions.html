@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="fade-in active-interview-page">
+
+    <div class="section-title">
+
+        <span class="badge">
+             AI Interview
+        </span>
+
+        <h2>{{ role }}</h2>
+
+        <p>
+            Answer all the questions below. After completing them, click
+            <strong>Submit Interview</strong> to receive your AI evaluation.
+        </p>
+
+    </div>
+
+    <!-- Candidate Details -->
+
+    <section class="card interview-details" aria-labelledby="interview-details-title">
+
+        <h3 id="interview-details-title">Interview Details</h3>
+
+        <div class="interview-details-grid">
+            <div class="interview-detail">
+                <span>Candidate</span>
+                <strong>{{ candidate_name }}</strong>
+            </div>
+
+            <div class="interview-detail">
+                <span>Role</span>
+                <strong>{{ role }}</strong>
+            </div>
+
+            <div class="interview-detail">
+                <span>Experience level</span>
+                <strong>{{ experience_level }}</strong>
+            </div>
+
+            <div class="interview-detail">
+                <span>Interview type</span>
+                <strong>{{ interview_type }}</strong>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Questions -->
+
+    <form action="{{ url_for('results') }}" method="POST">
+
+        <!-- Hidden Fields -->
+
+        <input type="hidden" name="candidate_name" value="{{ candidate_name }}">
+
+        <input type="hidden" name="role" value="{{ role }}">
+
+        <input type="hidden" name="experience_level" value="{{ experience_level }}">
+
+        <input type="hidden" name="interview_type" value="{{ interview_type }}">
+
+        {% for question in questions %}
+
+        <div class="question-card {% if question.skipped %}question-skipped{% endif %}">
+
+            <div class="question-header">
+
+                <div class="question-number">
+
+                    Question {{ loop.index }}
+
+                </div>
+
+                <div class="topic-badge">
+
+                    {{ question.topic }}
+
+                </div>
+
+            </div>
+
+            <div class="question-controls">
+                <button type="submit" class="question-control" formmethod="post"
+                    formaction="{{ url_for('question_control', question_id=question.id, action='replace') }}">Try another question</button>
+                <button type="submit" class="question-control {% if question.flagged %}is-active{% endif %}" formmethod="post"
+                    formaction="{{ url_for('question_control', question_id=question.id, action='flag') }}">
+                    {% if question.flagged %}Flagged for review{% else %}Flag for review{% endif %}
+                </button>
+                <button type="submit" class="question-control danger" formmethod="post"
+                    formaction="{{ url_for('question_control', question_id=question.id, action='skip') }}">
+                    {% if question.skipped %}Restore question{% else %}Skip question{% endif %}
+                </button>
+            </div>
+
+            <div class="question-text">
+
+                {{ question.question | format_code_blocks }}
+
+            </div>
+
+            <textarea
+
+                class="answer-box"
+
+                name="response_{{ question.id }}"
+
+                {% if question.skipped %}disabled{% else %}required{% endif %}
+
+                placeholder="Type your answer here..."
+            >{{ draft_answers.get(question.id|string, '') }}</textarea>
+
+            {% if question.skipped %}
+            <p class="skip-note">This question will not be included in your score.</p>
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+        <div class="text-center mt-4">
+
+            <button class="start-btn submit-btn" type="submit">
+
+                 Submit Interview
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

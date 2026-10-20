@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="home-page fade-in">
+
+    <section class="hero-panel">
+        <div class="hero-copy">
+            <span class="badge">AI interview platform for high-performance teams</span>
+            <h1>Build interview confidence with an <span>enterprise-grade AI coach</span>.</h1>
+            <p>
+                Realistic mock interviews, role-based practice, intelligent analysis, and actionable feedback
+                designed to help candidates perform at their best in every hiring round.
+            </p>
+
+            <div class="hero-actions">
+                <a href="#start-interview" class="primary-btn">Start Interview</a>
+                <a href="#features" class="secondary-btn">Explore Features</a>
+            </div>
+
+            <div class="hero-badges">
+                <span>AI Feedback</span>
+                <span>Smart Scoring</span>
+                <span>Study Guidance</span>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-item">
+                    <strong>12k+</strong>
+                    <span>Practice sessions</span>
+                </div>
+                <div class="stat-item">
+                    <strong>4.9/5</strong>
+                    <span>User satisfaction</span>
+                </div>
+                <div class="stat-item">
+                    <strong>24/7</strong>
+                    <span>AI coaching</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="visual-card">
+                <div class="mini-header">
+                    <span class="dot blue"></span>
+                    <span class="dot green"></span>
+                    <span class="dot orange"></span>
+                </div>
+
+                <div class="product-panel">
+                    <div class="panel-topline">
+                        <span>Interview Intelligence</span>
+                        <span class="live-pill">Live</span>
+                    </div>
+                    <div class="metric-stack">
+                        <div class="metric-box primary">
+                            <span>Interview Ready</span>
+                            <strong>94%</strong>
+                        </div>
+                        <div class="metric-box">
+                            <span>Role Match</span>
+                            <strong>Python</strong>
+                        </div>
+                        <div class="metric-box">
+                            <span>Next Step</span>
+                            <strong>Practice</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="trust-strip">
+        <span>Built for fast-moving teams and ambitious candidates</span>
+        <div class="trust-list">
+            <span>Python</span>
+            <span>Java</span>
+            <span>Full Stack</span>
+            <span>AI/ML</span>
+            <span>Cloud</span>
+        </div>
+    </section>
+
+    <section class="home-form-card" id="start-interview">
+        <div class="form-header-row">
+            <div>
+                <p class="eyebrow">Start Interview</p>
+                <h2>Configure your mock interview</h2>
+            </div>
+            <div class="form-glow"></div>
+        </div>
+
+        <form method="POST" action="{{ url_for('home') }}">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="candidate_name">Candidate Name</label>
+                    <input
+                        type="text"
+                        id="candidate_name"
+                        name="candidate_name"
+                        placeholder="Enter your full name"
+                        value="{{ candidate_name or '' }}"
+                        required>
+                </div>
+
+                <div class="input-group">
+                    <label for="role">Job Role</label>
+                    <select id="role" name="role" required>
+                        <option value="">Select Role</option>
+                        <option value="Python Developer">Python Developer</option>
+                        <option value="Java Developer">Java Developer</option>
+                        <option value="Frontend Developer">Frontend Developer</option>
+                        <option value="Backend Developer">Backend Developer</option>
+                        <option value="Full Stack Developer">Full Stack Developer</option>
+                        <option value="AI/ML Engineer">AI/ML Engineer</option>
+                        <option value="Data Scientist">Data Scientist</option>
+                        <option value="Data Analyst">Data Analyst</option>
+                        <option value="Cloud Engineer">Cloud Engineer</option>
+                        <option value="DevOps Engineer">DevOps Engineer</option>
+                        <option value="Cyber Security Analyst">Cyber Security Analyst</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="experience_level">Experience Level</label>
+                    <select id="experience_level" name="experience_level" required>
+                        <option value="">Select Experience</option>
+                        <option value="Easy">Entry Level</option>
+                        <option value="Medium">Mid Level</option>
+                        <option value="Hard">Senior Level</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="interview_type">Interview Type</label>
+                    <select id="interview_type" name="interview_type" required>
+                        <option value="">Select Interview Type</option>
+                        <option value="Technical">Technical Interview</option>
+                        <option value="HR">HR Interview</option>
+                        <option value="Mixed">Mixed Interview</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="start-btn"> Start Interview</button>
+        </form>
+    </section>
+
+    <section class="features" id="features">
+        <div class="section-title">
+            <p class="eyebrow">Why it works</p>
+            <h2>Built for high-impact technical hiring.</h2>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="icon">🤖</div>
+                <h3>AI Generated Questions</h3>
+                <p>Receive unique, role-based interview prompts tailored to your target job and experience level.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">📊</div>
+                <h3>Smart Evaluation</h3>
+                <p>Get clear scoring, strengths, missing concepts, and ideal answers after every response.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">🎯</div>
+                <h3>Role-Specific Practice</h3>
+                <p>Prepare for real-world expectations across Python, Java, DevOps, AI/ML, and more.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">📚</div>
+                <h3>Personalized Study Plan</h3>
+                <p>Follow a guided improvement path with practical recommendations to target weak areas.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="comparison-panel">
+        <div class="comparison-header">
+            <div>
+                <p class="eyebrow">Platform advantage</p>
+                <h2>Enterprise-ready interview coaching.</h2>
+            </div>
+        </div>
+        <div class="comparison-grid">
+            <div class="comparison-card">
+                <span class="comparison-tag">Before</span>
+                <h3>Static practice</h3>
+                <p>Generic questions and no real-time guidance.</p>
+            </div>
+            <div class="comparison-card highlight">
+                <span class="comparison-tag">After</span>
+                <h3>AI interview engine</h3>
+                <p>Adaptive prompts, instant scoring, and personalized growth insights.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="card about-card" id="about">
+        <div class="about-inner">
+            <div>
+                <p class="eyebrow">About</p>
+                <h2>AI Interview Simulator</h2>
+            </div>
+            <p>
+                AI Interview Simulator helps students and professionals train for real hiring conversations using
+                AI-generated technical and HR questions, instant feedback, and personalized learning suggestions.
+            </p>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

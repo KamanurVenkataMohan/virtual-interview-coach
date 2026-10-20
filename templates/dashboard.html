@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container fade-in">
+
+    <div class="section-title dashboard-welcome">
+        <span class="badge">📊 Dashboard</span>
+        <h2>Welcome, {{ current_user or 'Candidate' }}</h2>
+        <p>Track your interview performance and analytics.</p>
+    </div>
+
+    <!-- ================= Statistics ================= -->
+
+    <div class="dashboard-grid">
+
+        <div class="dashboard-card">
+            <h4>Total Interviews</h4>
+            <h2>{{ stats.total_interviews }}</h2>
+        </div>
+
+        <div class="dashboard-card">
+            <h4>Average Score</h4>
+            <h2>{{ stats.average_score }}/10</h2>
+        </div>
+
+        <div class="dashboard-card">
+            <h4>Best Score</h4>
+            <h2>{{ stats.best_score }}/10</h2>
+        </div>
+
+        <div class="dashboard-card">
+            <h4>Average Confidence</h4>
+            <h2>{{ stats.average_confidence }}%</h2>
+        </div>
+
+    </div>
+
+    <br>
+
+    <section class="learning-progress">
+        <div>
+            <p class="progress-label">Score trend</p>
+            <h3>{% if score_change >= 0 %}+{% endif %}{{ score_change }}/10</h3>
+            <p>Change from your first to most recent interview.</p>
+        </div>
+        <div>
+            <p class="progress-label">Study tasks complete</p>
+            <h3>{{ completed_tasks }}/{{ study_tasks|length }}</h3>
+            <p>Mark a task complete as you work through your plan.</p>
+        </div>
+        <div class="weak-topics">
+            <p class="progress-label">Topics needing practice</p>
+            {% if weak_topics %}
+                {% for topic, count in weak_topics %}<span>{{ topic }} · {{ count }}</span>{% endfor %}
+            {% else %}<p>No weak-topic trend yet.</p>{% endif %}
+        </div>
+    </section>
+
+    {% if study_tasks %}
+    <section class="study-task-panel">
+        <h3>Current study plan</h3>
+        {% for item in study_tasks %}
+        <form method="POST" action="{{ url_for('toggle_study_task', interview_id=item.interview_id, task_index=item.index) }}" class="study-task {% if item.completed %}completed{% endif %}">
+            <button type="submit" aria-label="Toggle completion for {{ item.task }}">{% if item.completed %}✓{% else %}○{% endif %}</button>
+            <span>{{ item.task }}</span>
+        </form>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- ================= Charts ================= -->
+
+    <div class="chart-container">
+
+        <div class="chart-card">
+
+            <h3>📈 Interview Scores</h3>
+
+            <canvas id="scoreChart"></canvas>
+
+        </div>
+
+        <div class="chart-card">
+
+            <h3>🥧 Recommendation Distribution</h3>
+
+            <canvas id="recommendChart"></canvas>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <!-- ================= Search ================= -->
+
+    <div class="search-container">
+
+        <input
+            type="text"
+            id="searchInput"
+            class="search-box"
+            placeholder="🔍 Search Candidate, Role or Interview Type">
+
+    </div>
+
+    <!-- ================= Table ================= -->
+
+    <div class="table-card">
+
+        <h2>Interview History</h2>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Candidate</th>
+
+                    <th>Role</th>
+
+                    <th>Interview Type</th>
+
+                    <th>Score</th>
+
+                    <th>Recommendation</th>
+
+                    <th>View</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% if results %}
+
+                {% for result in results %}
+
+                <tr>
+
+                    <td>{{ result.candidate_name }}</td>
+
+                    <td>{{ result.role }}</td>
+
+                    <td>{{ result.interview_type }}</td>
+
+                    <td>
+
+                        {% if result.performance_score >= 8 %}
+
+                            <span class="score-excellent">
+                                {{ result.performance_score }}/10
+                            </span>
+
+                        {% elif result.performance_score >= 5 %}
+
+                            <span class="score-good">
+                                {{ result.performance_score }}/10
+                            </span>
+
+                        {% else %}
+
+                            <span class="score-average">
+                                {{ result.performance_score }}/10
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if result.summary.recommendation=="Recommended" %}
+
+                            <span class="recommended">
+                                ✅ Recommended
+                            </span>
+
+                        {% elif result.summary.recommendation=="Needs Improvement" %}
+
+                            <span class="improvement">
+                                ⚠ Needs Improvement
+                            </span>
+
+                        {% else %}
+
+                            <span class="not-recommended">
+                                ❌ Not Recommended
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <a
+                            href="{{ url_for('candidate_details', interview_id=result.id) }}"
+                            class="btn">
+
+                            View
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td colspan="6">
+
+                        No interview history found.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ===========================
+    // SEARCH
+    // ===========================
+
+    const searchInput = document.getElementById("searchInput");
+
+    if(searchInput){
+
+        searchInput.addEventListener("keyup", function(){
+
+            const value = this.value.toLowerCase();
+
+            const rows = document.querySelectorAll("tbody tr");
+
+            rows.forEach(function(row){
+
+                row.style.display =
+                    row.innerText.toLowerCase().includes(value)
+                    ? ""
+                    : "none";
+
+            });
+
+        });
+
+    }
+
+    // ===========================
+    // SCORE CHART
+    // ===========================
+
+    const scoreCtx = document.getElementById("scoreChart");
+
+    if(scoreCtx){
+
+        new Chart(scoreCtx,{
+
+            type:"line",
+
+            data:{
+
+                labels:[
+                    {% for result in results %}
+                    "{{ result.candidate_name }}",
+                    {% endfor %}
+                ],
+
+                datasets:[{
+
+                    label:"Interview Score",
+
+                    data:[
+                        {% for result in results %}
+                        {{ result.performance_score }},
+                        {% endfor %}
+                    ],
+
+                    borderWidth:3,
+
+                    tension:0.4,
+
+                    fill:false
+
+                }]
+
+            },
+
+            options:{
+
+                responsive:true,
+
+                plugins:{
+                    legend:{
+                        display:true
+                    }
+                },
+
+                scales:{
+                    y:{
+                        beginAtZero:true,
+                        max:10
+                    }
+                }
+
+            }
+
+        });
+
+    }
+
+    // ===========================
+    // RECOMMENDATION CHART
+    // ===========================
+
+    const pieCtx = document.getElementById("recommendChart");
+
+    if(pieCtx){
+
+        new Chart(pieCtx,{
+
+            type:"pie",
+
+            data:{
+
+                labels:[
+                    "Recommended",
+                    "Needs Improvement",
+                    "Not Recommended"
+                ],
+
+                datasets:[{
+
+                    data:[
+                        {{ stats.recommended }},
+                        {{ stats.needs_improvement }},
+                        {{ stats.not_recommended }}
+                    ]
+
+                }]
+
+            },
+
+            options:{
+                responsive:true
+            }
+
+        });
+
+    }
+
+});
+
+</script>
+{% endblock %}
